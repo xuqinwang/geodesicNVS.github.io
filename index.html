@@ -20,6 +20,11 @@
   <link rel="stylesheet" href="./static/css/index.css">
   <link rel="icon" href="./static/images/favicon.svg">
 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script defer src="./static/js/fontawesome.all.min.js"></script>
   <script src="./static/js/bulma-carousel.min.js"></script>
@@ -91,16 +96,6 @@
 
           <div class="column has-text-centered">
             <div class="publication-links">
-              <!-- PDF Link. -->
-              <span class="link-block">
-                <a href="./main.pdf"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
               <span class="link-block">
                 <a href="#"
                    class="external-link button is-normal is-rounded is-dark">
@@ -133,18 +128,29 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <div class="columns is-centered">
-        <div class="column is-half">
-          <img src="./static/images/teaser/teaser1.png" alt="GeodesicNVS teaser: novel view synthesis results." style="width: 100%;">
+      <div class="teaser-container">
+        <div class="teaser-left">
+          <img src="./static/images/teaser/teaser1.png" alt="Conceptual illustration: geodesic paths on the data manifold avoid low-density regions, unlike linear interpolation.">
         </div>
-        <div class="column is-half">
-          <img src="./static/images/teaser/gaussian_path_010.png" alt="Gaussian geodesic path visualization." style="width: 100%;">
+        <div class="teaser-right">
+          <div class="teaser-row">
+            <div class="teaser-row-label">Stochastic Path (Diffusion)</div>
+            <img src="./static/images/teaser/gaussian_path_010.png" alt="Stochastic denoising path from noise to data.">
+          </div>
+          <div class="teaser-row">
+            <div class="teaser-row-label">Linear Interpolant</div>
+            <img src="./static/images/path_figure/mario_linear_007to010.png" alt="Linear interpolation between two views — blurry cross-fade.">
+          </div>
+          <div class="teaser-row">
+            <div class="teaser-row-label is-ours">Geodesic Interpolant (Ours)</div>
+            <img src="./static/images/path_figure/mario_TI_007to010.png" alt="Geodesic interpolation — sharp, on-manifold transitions.">
+          </div>
         </div>
       </div>
-      <h2 class="subtitle has-text-centered">
-        From Conditional Diffusion Model to Probability Density Geodesic Flow Matching:
-        our method learns deterministic data-to-data transformations along geodesic paths
-        on the probability density manifold for consistent novel view synthesis.
+      <h2 class="subtitle has-text-centered" style="margin-top: 1rem;">
+        <b>GeodesicNVS</b> replaces stochastic diffusion and naive linear interpolation with
+        <em>geodesic paths on the probability density manifold</em>, producing sharp and geometrically
+        coherent view transitions for novel view synthesis.
       </h2>
     </div>
   </div>
@@ -168,23 +174,110 @@
 </section>
 
 
+<!-- Motivation -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">Why Geodesic Flow Matching?</h2>
+        <div class="content has-text-justified">
+
+          <h4 class="title is-5">The Problem with Diffusion-Based Novel View Synthesis</h4>
+          <p>
+            State-of-the-art methods such as Zero-1-to-3 and Free3D use diffusion models that generate novel views by denoising from random Gaussian noise. This stochastic noise-to-data process obscures the deterministic geometric relationship between views, leading to inconsistent multi-view predictions and requiring many denoising steps (typically 50&ndash;100 NFE).
+          </p>
+
+          <h4 class="title is-5">The Problem with Linear Flow Matching</h4>
+          <p>
+            Flow matching offers a deterministic alternative, but standard formulations use <em>linear interpolation</em> between source and target images. Linear paths cut through low-density regions of the data manifold, producing blurry, unrealistic intermediate states&mdash;pixel-level cross-fading rather than meaningful geometric transitions.
+          </p>
+
+          <h4 class="title is-5">Our Solution: Geodesic Paths on the Data Manifold</h4>
+          <p>
+            We define a Riemannian metric where distance is inversely proportional to data density, so the shortest path (geodesic) naturally follows high-density regions of the data manifold. By training flow matching models on these geodesic interpolants instead of linear ones, our method produces sharper, more geometrically coherent view transitions.
+          </p>
+
+          <div class="key-insight">
+            <h4>Key Idea</h4>
+            <p>
+              Under the metric $\mathbf{G}(x) = p(x)^{-2}\,\mathbf{I}$, where $p(x)$ is the data density estimated by a pretrained diffusion model, geodesic paths stay in high-density regions of the data manifold. This turns the abstract notion of "staying on the manifold" into a concrete, trainable objective.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 <!-- Method Overview -->
 <section class="section">
   <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
+    <div class="columns is-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Method Overview</h2>
-        <div class="content has-text-justified">
-          <p>
-            Our PDG-FM framework consists of two key components:
-            <strong>(1) Data-to-Data Flow Matching (D2D-FM)</strong>, which replaces the conventional noise-to-data generation with a deterministic, view-conditioned data-to-data mapping;
-            and <strong>(2) Variational Distillation of Geodesics</strong>, which regularizes the flow trajectories to follow geodesic paths on the probability density manifold of a pretrained diffusion model.
-          </p>
-        </div>
+        <h2 class="title is-3 has-text-centered">Method Overview</h2>
         <img src="./static/images/framework.png" alt="PDG-FM framework diagram." class="interpolation-image" style="width: 100%;">
-        <p class="has-text-centered" style="margin-top: 0.5rem; font-style: italic;">
-          Overview of the PDG-FM framework for novel view synthesis.
+        <p class="has-text-centered" style="margin-top: 0.5rem; margin-bottom: 2rem; font-style: italic;">
+          <strong>Figure 2.</strong> Overview of the Probability Density Geodesic Flow Matching (PDG-FM) framework. <strong>(Left)</strong> Data-to-data flow matching pipeline: the source view $I_0$ and target view $I_1$ are encoded, and GeodesicNet $\phi_\eta$ produces geodesic interpolants that replace linear ones. The flow matching network $v_\theta$, conditioned on source-view features and camera ray embeddings, learns to predict the target from these on-manifold interpolants. <strong>(Right)</strong> GeodesicNet training: a pretrained diffusion model's score function $\nabla \log p(x)$ serves as a density proxy to define the probability density geodesic metric. GeodesicNet is trained via path energy optimization to produce interpolants that minimize the Euler&ndash;Lagrange geodesic energy under this metric.
         </p>
+        <div class="content has-text-justified">
+
+          <div class="method-subsection">
+            <h3 class="title is-5">1. Data-to-Data Flow Matching (D2D-FM)</h3>
+            <p>
+              Instead of the conventional noise-to-data generation, we learn a deterministic mapping directly from a source view $x_0$ to a target view $x_1$. The flow model is conditioned on relative camera pose via Pl&uuml;cker ray embeddings and source-view features (CLIP + VAE). This preserves structural correspondence between paired views and eliminates stochastic sampling, enabling high-quality synthesis in as few as 10 function evaluations.
+            </p>
+          </div>
+
+          <div class="method-subsection">
+            <h3 class="title is-5">2. Probability Density Geodesic Flow Matching (PDG-FM)</h3>
+            <p>
+              Standard flow matching uses <em>linear interpolants</em>: $x_t = (1-t)x_0 + t x_1$, which traverse straight lines through low-density (off-manifold) regions. We replace these with <em>geodesic interpolants</em> that add a learned correction:
+            </p>
+            <div class="key-insight">
+              <p style="text-align: center;">
+                $$x_t = (1-t)x_0 + t x_1 + \phi_\eta(x_0, x_1, t)$$
+              </p>
+              <p>
+                The correction network $\phi_\eta$ (GeodesicNet) learns to produce interpolation corrections that keep the path on the data manifold.
+              </p>
+            </div>
+            <p>
+              To find the shortest path on the data manifold, we minimize the <strong>Euler&ndash;Lagrange energy functional</strong>&mdash;the classical variational condition for geodesics. This energy depends on the data density $p(x)$, which we cannot compute directly. Instead, we use the <strong>score function</strong> $\nabla \log p(x)$ from a pretrained diffusion model as a tractable density proxy: the score defines the Riemannian metric that determines manifold geometry. This naturally sets up a <strong>teacher&ndash;student scheme</strong>: the pretrained diffusion model (teacher) provides score estimates that define the manifold curvature, and GeodesicNet (student) learns to correct interpolation paths so they minimize the geodesic energy under this geometry.
+            </p>
+            <p>
+              Training proceeds in two phases: <strong>(1)</strong> learn geodesic paths by training GeodesicNet to minimize the Euler&ndash;Lagrange geodesic energy using the teacher&rsquo;s score estimates, and <strong>(2)</strong> train the flow matching model on the resulting geodesic interpolants.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Key Results -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">Key Results</h2>
+        <div class="highlights-grid highlights-grid-3">
+          <div class="highlight-card">
+            <span class="highlight-number">Consistent Gains</span>
+            <span class="highlight-text">D2D-FM outperforms diffusion baselines (Free3D, Zero-1-to-3) at both 10 and 100 NFE on Objaverse &amp; GSO30, with moderate but consistent improvements over naive FM.</span>
+          </div>
+          <div class="highlight-card">
+            <span class="highlight-number">10x Faster</span>
+            <span class="highlight-text">Maintains quality with only 10 NFE vs. 50&ndash;100 for diffusion baselines, thanks to deterministic data-to-data mapping.</span>
+          </div>
+          <div class="highlight-card">
+            <span class="highlight-number">13x More Motion</span>
+            <span class="highlight-text">Geodesic interpolants show 13x higher optical flow (AOFM: 13.70 vs. 1.04), confirming coherent camera motion rather than static blending.</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -215,7 +308,7 @@
         </div>
 
         <!-- Object 1 -->
-        <div class="columns is-mobile is-centered">
+        <div class="columns is-mobile is-centered comparison-grid">
           <div class="column"><img src="./static/images/d2d_fm/0f8d4974e672417aa5afbc63bda7c15c_input.png" alt="Input"></div>
           <div class="column"><img src="./static/images/d2d_fm/0f8d4974e672417aa5afbc63bda7c15c_gt.png" alt="Ground Truth"></div>
           <div class="column"><img src="./static/images/d2d_fm/0f8d4974e672417aa5afbc63bda7c15c_free3d.png" alt="Free3D"></div>
@@ -224,7 +317,7 @@
         </div>
 
         <!-- Object 2 -->
-        <div class="columns is-mobile is-centered">
+        <div class="columns is-mobile is-centered comparison-grid">
           <div class="column"><img src="./static/images/d2d_fm/2307ebbf827848999b3579c3e541463e_input.png" alt="Input"></div>
           <div class="column"><img src="./static/images/d2d_fm/2307ebbf827848999b3579c3e541463e_gt.png" alt="Ground Truth"></div>
           <div class="column"><img src="./static/images/d2d_fm/2307ebbf827848999b3579c3e541463e_free3d.png" alt="Free3D"></div>
@@ -233,7 +326,7 @@
         </div>
 
         <!-- Object 3 -->
-        <div class="columns is-mobile is-centered">
+        <div class="columns is-mobile is-centered comparison-grid">
           <div class="column"><img src="./static/images/d2d_fm/58153bc3fba24cc4a7e50845aef6dcdf_input.png" alt="Input"></div>
           <div class="column"><img src="./static/images/d2d_fm/58153bc3fba24cc4a7e50845aef6dcdf_gt.png" alt="Ground Truth"></div>
           <div class="column"><img src="./static/images/d2d_fm/58153bc3fba24cc4a7e50845aef6dcdf_free3d.png" alt="Free3D"></div>
@@ -255,30 +348,25 @@
           </p>
         </div>
 
-        <!-- Alarm -->
-        <h3 class="title is-5">Alarm</h3>
-        <div class="columns is-mobile is-centered has-text-centered" style="margin-bottom: 0.25rem;">
-          <div class="column"><strong>Input View</strong></div>
-          <div class="column"><strong>Free3D Novel Views</strong></div>
-          <div class="column"><strong>Ours Novel Views</strong></div>
+        <!-- Header row -->
+        <div class="gso30-header">
+          <div>Input View</div>
+          <div>Free3D Novel Views</div>
+          <div>Ours Novel Views</div>
         </div>
-        <div class="columns is-mobile is-centered">
-          <div class="column"><img src="./static/images/gso30_nvs/conditioning/alarm_src0_light.png" alt="Alarm input"></div>
-          <div class="column"><img src="./static/images/gso30_nvs/free3d/alarm_src0_views_newView_light.png" alt="Alarm Free3D"></div>
-          <div class="column"><img src="./static/images/gso30_nvs/fm_boost/alarm_src0_views_newView_light.png" alt="Alarm Ours"></div>
+
+        <!-- Alarm -->
+        <div class="gso30-grid">
+          <div><img src="./static/images/gso30_nvs/conditioning/alarm_src0_light.png" alt="Alarm input"></div>
+          <div><img src="./static/images/gso30_nvs/free3d/alarm_src0_views_newView_light.png" alt="Alarm Free3D"></div>
+          <div><img src="./static/images/gso30_nvs/fm_boost/alarm_src0_views_newView_light.png" alt="Alarm Ours"></div>
         </div>
 
         <!-- Backpack -->
-        <h3 class="title is-5">Backpack</h3>
-        <div class="columns is-mobile is-centered has-text-centered" style="margin-bottom: 0.25rem;">
-          <div class="column"><strong>Input View</strong></div>
-          <div class="column"><strong>Free3D Novel Views</strong></div>
-          <div class="column"><strong>Ours Novel Views</strong></div>
-        </div>
-        <div class="columns is-mobile is-centered">
-          <div class="column"><img src="./static/images/gso30_nvs/conditioning/backpack_src0_light.png" alt="Backpack input"></div>
-          <div class="column"><img src="./static/images/gso30_nvs/free3d/backpack_src0_views_newView_light.png" alt="Backpack Free3D"></div>
-          <div class="column"><img src="./static/images/gso30_nvs/fm_boost/backpack_src0_views_newView_light.png" alt="Backpack Ours"></div>
+        <div class="gso30-grid">
+          <div><img src="./static/images/gso30_nvs/conditioning/backpack_src0_light.png" alt="Backpack input"></div>
+          <div><img src="./static/images/gso30_nvs/free3d/backpack_src0_views_newView_light.png" alt="Backpack Free3D"></div>
+          <div><img src="./static/images/gso30_nvs/fm_boost/backpack_src0_views_newView_light.png" alt="Backpack Ours"></div>
         </div>
 
       </div>
@@ -304,7 +392,7 @@
         </div>
 
         <!-- Object 1 -->
-        <div class="columns is-mobile is-centered">
+        <div class="columns is-mobile is-centered comparison-grid">
           <div class="column"><img src="./static/images/geodesic_fm/59e0754be98f44539e842fb26d43acb4_input.png" alt="Input"></div>
           <div class="column"><img src="./static/images/geodesic_fm/59e0754be98f44539e842fb26d43acb4_gt.png" alt="Ground Truth"></div>
           <div class="column"><img src="./static/images/geodesic_fm/59e0754be98f44539e842fb26d43acb4_fmboost_20k_256.png" alt="Linear FM"></div>
@@ -312,7 +400,7 @@
         </div>
 
         <!-- Object 2 -->
-        <div class="columns is-mobile is-centered">
+        <div class="columns is-mobile is-centered comparison-grid">
           <div class="column"><img src="./static/images/geodesic_fm/88a9b32e1d0f44fbb5b8560d47ae7d6f_input.png" alt="Input"></div>
           <div class="column"><img src="./static/images/geodesic_fm/88a9b32e1d0f44fbb5b8560d47ae7d6f_gt.png" alt="Ground Truth"></div>
           <div class="column"><img src="./static/images/geodesic_fm/88a9b32e1d0f44fbb5b8560d47ae7d6f_fmboost_20k_256.png" alt="Linear FM"></div>
@@ -320,7 +408,7 @@
         </div>
 
         <!-- Object 3 -->
-        <div class="columns is-mobile is-centered">
+        <div class="columns is-mobile is-centered comparison-grid">
           <div class="column"><img src="./static/images/geodesic_fm/aec69c979166446eb2c8e1503f570d26_input.png" alt="Input"></div>
           <div class="column"><img src="./static/images/geodesic_fm/aec69c979166446eb2c8e1503f570d26_gt.png" alt="Ground Truth"></div>
           <div class="column"><img src="./static/images/geodesic_fm/aec69c979166446eb2c8e1503f570d26_fmboost_20k_256.png" alt="Linear FM"></div>
@@ -362,6 +450,17 @@
           <div class="column"><img src="./static/images/path_figure/2c3ade337cb7454893669dd9bfea40ad_geodesic_007to008.png" alt="Object geodesic interpolation" style="width: 100%;"></div>
         </div>
 
+        <!-- Convergence Plot -->
+        <h3 class="title is-5" style="margin-top: 1.5rem;">Geodesic Optimization Convergence</h3>
+        <div class="content has-text-justified">
+          <p>
+            The Euler&ndash;Lagrange residual (functional derivative norm) decreases during geodesic optimization, confirming convergence to true geodesics on the probability density manifold.
+          </p>
+        </div>
+        <div class="convergence-figure">
+          <img src="./static/images/path_figure/funcDev1_div3000_nolog.png" alt="Functional derivative convergence plot showing decreasing Euler-Lagrange residual.">
+        </div>
+
       </div>
     </div>
     <!--/ Geodesic Interpolation Paths -->
@@ -386,10 +485,6 @@
 <footer class="footer">
   <div class="container">
     <div class="content has-text-centered">
-      <a class="icon-link"
-         href="./main.pdf">
-        <i class="fas fa-file-pdf"></i>
-      </a>
       <a class="icon-link" href="https://github.com/geodesicNVS" class="external-link" disabled>
         <i class="fab fa-github"></i>
       </a>

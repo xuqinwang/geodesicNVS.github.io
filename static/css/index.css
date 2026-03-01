@@ -29,11 +29,11 @@ body {
 
 
 .publication-title {
+    font-family: 'Google Sans', sans-serif;
 }
 
 .publication-banner {
   max-height: parent;
-
 }
 
 .publication-banner video {
@@ -42,13 +42,6 @@ body {
   top: auto;
   transform: none;
   object-fit: fit;
-}
-
-.publication-header .hero-body {
-}
-
-.publication-title {
-    font-family: 'Google Sans', sans-serif;
 }
 
 .publication-authors {
@@ -67,9 +60,6 @@ body {
     font-weight: bolder;
 }
 
-.publication-authors {
-}
-
 .publication-authors a {
    color: hsl(204, 86%, 53%) !important;
 }
@@ -82,19 +72,11 @@ body {
   display: inline-block;
 }
 
-.publication-banner img {
-}
-
-.publication-authors {
-  /*color: #4286f4;*/
-}
-
 .publication-video {
     position: relative;
     width: 100%;
     height: 0;
     padding-bottom: 56.25%;
-
     overflow: hidden;
     border-radius: 10px !important;
 }
@@ -105,9 +87,6 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-}
-
-.publication-body img {
 }
 
 .results-carousel {
@@ -138,13 +117,6 @@ body {
   border-radius: 5px;
 }
 
-.interpolation-video-column {
-}
-
-.interpolation-panel .slider {
-  margin: 0 !important;
-}
-
 .interpolation-panel .slider {
   margin: 0 !important;
 }
@@ -154,4 +126,180 @@ body {
 }
 #interpolation-image-wrapper img {
   border-radius: 5px;
+}
+
+/* ===== Teaser Figure Layout ===== */
+.teaser-container {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+.teaser-left {
+  flex: 0 0 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.teaser-left img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.teaser-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.teaser-row {
+  position: relative;
+}
+
+.teaser-row img {
+  width: 100%;
+  display: block;
+}
+
+.teaser-row-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: #363636;
+}
+
+.teaser-row-label.is-ours {
+  color: #3273dc;
+}
+
+@media screen and (max-width: 768px) {
+  .teaser-container {
+    flex-direction: column;
+  }
+  .teaser-left {
+    flex: none;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}
+
+/* ===== GSO30 Comparison Grid ===== */
+.gso30-grid {
+  display: grid;
+  grid-template-columns: 1fr 3fr 3fr;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.gso30-grid img {
+  width: 100%;
+  display: block;
+}
+
+.gso30-header {
+  display: grid;
+  grid-template-columns: 1fr 3fr 3fr;
+  gap: 0.5rem;
+  text-align: center;
+  margin-bottom: 0.25rem;
+  font-weight: 700;
+}
+
+.gso30-grid + .gso30-grid {
+  margin-top: 0.5rem;
+}
+
+/* ===== Key Insight / Callout Box ===== */
+.key-insight {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+  border-left: 4px solid #3273dc;
+  border-radius: 6px;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.key-insight h4 {
+  color: #3273dc;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+}
+
+.key-insight p {
+  margin-bottom: 0.5rem;
+}
+
+.key-insight p:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== Method Subsections ===== */
+.method-subsection {
+  margin-bottom: 2rem;
+}
+
+.method-subsection h3 {
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ===== Key Results Highlights ===== */
+.highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.highlight-card {
+  background: #fafafa;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+
+.highlight-card .highlight-number {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #3273dc;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.highlight-card .highlight-text {
+  font-size: 0.92rem;
+  color: #4a4a4a;
+}
+
+.highlights-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media screen and (max-width: 768px) {
+  .highlights-grid,
+  .highlights-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Comparison images consistent styling ===== */
+.comparison-grid img {
+  width: 100%;
+  display: block;
+  border-radius: 3px;
+}
+
+/* ===== Convergence Plot ===== */
+.convergence-figure {
+  max-width: 480px;
+  margin: 1.5rem auto;
+}
+
+.convergence-figure img {
+  width: 100%;
+  display: block;
 }
