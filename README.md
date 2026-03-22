@@ -4,11 +4,12 @@ This is the repository that contains the project page for [GeodesicNVS: Probabil
 
 If you find GeodesicNVS useful for your work please cite:
 ```
-@inproceedings{wang2026geodesicnvs,
-  author    = {Wang, Xuqin and Wu, Tao and Zhang, Yanfeng and Liu, Lu and Sun, Mingwei and Wang, Yongliang and Zeller, Niclas and Cremers, Daniel},
-  title     = {GeodesicNVS: Probability Density Geodesic Flow Matching for Novel View Synthesis},
-  booktitle = {CVPR},
-  year      = {2026},
+@article{wang2026geodesicnvs,
+  title={GeodesicNVS: Probability Density Geodesic Flow Matching for Novel View Synthesis},
+  author={Wang, Xuqin and Wu, Tao and Zhang, Yanfeng and Liu, Lu and Sun, Mingwei and Wang, Yongliang and Zeller, Niclas and Cremers, Daniel},
+  journal={arXiv preprint arXiv:2603.01010},
+  year={2026},
+  note={Accepted to CVPR 2026}
 }
 ```
 
